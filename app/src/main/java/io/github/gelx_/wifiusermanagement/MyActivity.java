@@ -3,8 +3,11 @@ package io.github.gelx_.wifiusermanagement;
 import android.app.Activity;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,7 +28,9 @@ import io.github.gelx_.wifiusermanagement.database.DB_users;
 
 
 public class MyActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ItemFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+                   ItemFragment.OnFragmentInteractionListener,
+                   AddUserFragment.OnFragmentInteractionListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -38,6 +45,8 @@ public class MyActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private boolean showingUserList;
+    private ItemFragment userListFragment;
 
     private ConnectionHelper connectionHelper;
     private Thread connHelperThread;
@@ -57,7 +66,7 @@ public class MyActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         //TODO: Read from config or something
-        final InetSocketAddress address = new InetSocketAddress("192.168.2.112", 12345);
+        final InetSocketAddress address = new InetSocketAddress("192.168.2.109", 12345);
         connHelperThread = new Thread(new Runnable(){ public void run(){
             try {
                 connectionHelper = new ConnectionHelper(address, getApplicationContext());
@@ -74,10 +83,16 @@ public class MyActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
+        showingUserList = false;
 
         switch(position) {
             case 0:
-                fragment = new ItemFragment();
+                this.userListFragment = new ItemFragment();
+                fragment = this.userListFragment;
+                showingUserList = true;
+                break;
+            case 1:
+                fragment = new AddUserFragment();
                 break;
             default:
                 fragment = PlaceholderFragment.newInstance(position + 1);
@@ -117,7 +132,10 @@ public class MyActivity extends Activity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.my, menu);
+            if(showingUserList)
+                getMenuInflater().inflate(R.menu.userlist, menu);
+            else
+                getMenuInflater().inflate(R.menu.my, menu);
             restoreActionBar();
             return true;
         }
@@ -132,7 +150,11 @@ public class MyActivity extends Activity
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_refresh) {
+            refreshUserList();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -153,6 +175,41 @@ public class MyActivity extends Activity
             }
 
         return connectionHelper;
+    }
+
+    public void refreshUserList(){
+        if(!showingUserList){
+            throw new IllegalStateException("Not showing UserList!");
+        } else {
+            this.userListFragment.refresh();
+        }
+    }
+
+    public void onUserAdd(View view){
+        TextView nameTextView = (TextView) findViewById(R.id.editText);
+        TextView expiresTextView = (TextView) findViewById(R.id.editText3);
+        String name = nameTextView.getText().toString();
+        int expires = Integer.parseInt(expiresTextView.getText().toString());
+
+        final DB_users user = new DB_users(name, expires);
+        String code = user.getCode();
+
+        new Thread(new Runnable(){ public void run(){
+            getConnectionHelper().addUser(user);
+        }
+        }).start();
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(expiresTextView.getWindowToken(), 0);
+
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.setTitle("User created!");
+        dialog.setMessage("Code: '" + code + "'");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onNavigationDrawerItemSelected(0);
+            }
+        });
+        dialog.show();
     }
 
     /**

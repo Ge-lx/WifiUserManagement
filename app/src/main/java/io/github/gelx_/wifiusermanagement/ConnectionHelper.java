@@ -33,9 +33,11 @@ public class ConnectionHelper {
                 respUsersPacket = connection.getHandler().lastRespUsersPacket;
             }
         } catch (InterruptedException e) {
-            throw new TimeoutException("Server did not respond in time!");
+            Log.e("ConnHelper", "Interrupted while waiting!");
         }
-        return respUsersPacket.getUsers();
+        if(respUsersPacket == null)
+            throw new TimeoutException("Server did not respond in time!");
+        return respUsersPacket == null ? null : respUsersPacket.getUsers();
     }
 
     public DB_users getUser(String name) throws TimeoutException {
@@ -48,9 +50,19 @@ public class ConnectionHelper {
                 respUserPacket = connection.getHandler().lastRespUserPacket;
             }
         } catch (InterruptedException e) {
-            throw new TimeoutException("Server did not respond in time!");
+            Log.e("ConnHelper", "Interrupted while waiting!");
         }
+        if(respUserPacket == null)
+            throw new TimeoutException("Server did not respond in time!");
         return respUserPacket.getUser();
+    }
+
+    public void deleteUser(String user){
+        connection.queuePacketForWrite(new Protocol.DelUserPacket(connection.getAddress(), user));
+    }
+
+    public void addUser(DB_users user) {
+        connection.queuePacketForWrite(new Protocol.RegisterUserPacket(connection.getAddress(), user));
     }
 
     public void closeConnection(){

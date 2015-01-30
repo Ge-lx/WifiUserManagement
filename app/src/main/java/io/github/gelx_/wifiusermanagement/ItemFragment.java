@@ -38,15 +38,6 @@ import io.github.gelx_.wifiusermanagement.database.DB_users;
  */
 public class ItemFragment extends Fragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -60,16 +51,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private ArrayAdapter<DB_users> mAdapter;
 
-    // TODO: Rename and change types of parameters
-    public static ItemFragment newInstance(String param1, String param2) {
-        ItemFragment fragment = new ItemFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -77,21 +58,23 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     public ItemFragment() {
     }
 
+    /**
+     * Refreshes the users in this list
+     */
+    public void refresh(){
+        mAdapter.clear();
+        new LoadUsersAsyncTask().execute();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         mAdapter = new ArrayAdapter<DB_users>(getActivity(),
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
                 new ArrayList<DB_users>()
-                );
-
+        );
         new LoadUsersAsyncTask().execute();
     }
 
@@ -134,19 +117,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction((DB_users) parent.getAdapter().getItem(position));
-        }
-    }
-
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyText instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
         }
     }
 

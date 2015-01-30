@@ -1,6 +1,8 @@
 package io.github.gelx_.wifiusermanagement;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,6 +23,8 @@ import io.github.gelx_.wifiusermanagement.database.DB_users;
 
 
 public class DB_userActivity extends Activity {
+
+    private DB_users user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,26 @@ public class DB_userActivity extends Activity {
     }
 
     public void onButtonPress(View button){
-        //Nothing for now
+        AlertDialog dialog = new AlertDialog.Builder(DB_userActivity.this).create();
+        dialog.setTitle("Delete user?");
+        dialog.setMessage("This user will be deleted!");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Confirm", new DialogInterface.OnClickListener(){
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == DialogInterface.BUTTON_POSITIVE)
+                    new Thread(new Runnable(){
+                        public void run(){
+                            MyActivity.instance.getConnectionHelper().deleteUser(user.getName());
+                            finish();
+                        }
+                    }).start();
+                Toast toast = Toast.makeText(getApplicationContext(), "User deleted!", Toast.LENGTH_SHORT);
+                toast.show();
+                MyActivity.instance.refreshUserList();
+            }
+        });
+        dialog.show();
     }
 
     public class LoadUserAsyncTask extends AsyncTask<String, Void, DB_users> {
@@ -70,12 +94,15 @@ public class DB_userActivity extends Activity {
 
         @Override
         protected void onPostExecute(DB_users db_users) {
+            user = db_users;
             EditText name = (EditText) findViewById(R.id.editText);
             EditText mac = (EditText) findViewById(R.id.editText2);
+            EditText code = (EditText) findViewById(R.id.editText4);
             EditText expiresIn = (EditText) findViewById(R.id.editText3);
             CheckBox expired = (CheckBox) findViewById(R.id.checkBox);
             name.setText(db_users.getName());
             mac.setText(db_users.getMac());
+            code.setText(db_users.getCode());
             long expiresIn1 = db_users.getExpires() - System.currentTimeMillis();
             if(expiresIn1 < 0) {
                 expiresIn.setText("Expired");
