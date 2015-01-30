@@ -63,9 +63,9 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout2"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout3">
+        android:id="@+id/linearLayout3"
+        android:layout_below="@+id/linearLayout4"
+        android:layout_alignParentEnd="true">
 
         <TextView
             android:layout_width="wrap_content"
@@ -96,14 +96,43 @@
             android:clickable="false" />
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout4"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/label_code"
+            android:id="@+id/textView4"
+            android:textColor="@android:color/holo_blue_light"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:ems="10"
+            android:id="@+id/editText4"
+            android:layout_weight="1"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_commit_changes"
-        android:id="@+id/button"
+        android:text="@string/button_delete_user"
+        android:id="@+id/button2"
+        android:textColor="@android:color/holo_red_light"
+        android:onClick="onButtonPress"
+        android:layout_marginTop="26dp"
         android:layout_below="@+id/linearLayout3"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="32dp"
-        android:onClick="onButtonPress" />
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

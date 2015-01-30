@@ -2,19 +2,24 @@
 <resources>
 
     <string name="app_name">Wifi User Management</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
+    <string name="title_section1">Users</string>
+    <string name="title_section2">Add user</string>
     <string name="title_section3">Section 3</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
+    <string name="action_example">Refresh</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_db_user">User</string>
     <string name="hello_world">Hello world!</string>
-    <string name="hint_mac_input">MAC-Adress</string>
-    <string name="hint_name_input">Name</string>
+    <string name="hint_mac_input">MAC-Adress:</string>
+    <string name="hint_name_input">Name:</string>
     <string name="label_expires_in">Expires in:</string>
     <string name="button_commit_changes">Accept</string>
     <string name="label_expired_checkbox">Expired</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="button_delete_user">Delete user</string>
+    <string name="button_add_user">Add user</string>
+    <string name="hint_inHours">in hours</string>
+    <string name="label_code">Code:</string>
 
 </resources>
