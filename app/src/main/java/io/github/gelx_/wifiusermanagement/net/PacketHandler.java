@@ -73,34 +73,4 @@ public class PacketHandler implements Runnable{
         }
     }
 
-    public void handlePacketDebug(Packet packet){
-
-        switch (packet.getID()){
-            case 1: RegisterUserPacket registerUserPacket = (RegisterUserPacket) packet;
-                DB_users registerUser = registerUserPacket.getUser();
-                System.out.println("Received registerUserPacket. User: " + registerUser.toString());
-                break;
-            case 2: GetUserPacket getUserPacket = (GetUserPacket) packet;
-                String name = getUserPacket.getName();
-                System.out.println("Received getUserPacket. Name: " + name);
-                client.queuePacketForWrite(new RespUserPacket(packet.getAddress(), new DB_users(name, "AA:AA:AA:AA:AA:AA", System.currentTimeMillis() + 3600000)));
-                break;
-            case 3:
-                System.out.println("Received getUsersPacket");
-                break;
-            case 4: RespUserPacket respUserPacket = (RespUserPacket) packet;
-                DB_users respUser = respUserPacket.getUser();
-                System.out.println("Received respUserPacket. User: " + respUser.toString());
-                break;
-            case 5: RespUsersPacket respUsersPacket = (RespUsersPacket) packet;
-                DB_users[] respUsers = respUsersPacket.getUsers();
-                System.out.println("Received respUsersPacket! Users: ");
-                for (DB_users respUsersUser : respUsers){
-                    System.out.println(respUsersUser.toString());
-                }
-                break;
-            default: System.out.println("No handling for packet with ID " + packet.getID() + " implemented!");
-        }
-    }
-
 }
